@@ -5,11 +5,11 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.5'
 
+gem 'dotenv-rails'
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'pry-rails'
 gem 'puma', '~> 3.11'
 gem 'rails', '~> 6.0.0'
-gem 'dotenv-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.7'
 # Use Redis adapter to run Action Cable in production
