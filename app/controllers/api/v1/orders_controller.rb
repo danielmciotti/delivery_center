@@ -9,11 +9,11 @@ class Api::V1::OrdersController < ApplicationController
 
   def permitted_params
     params.require(:order)
-          .permit(order_permitted_params,
-                  payments: [payment_permitted_params],
-                  buyer: buyer_permitted_params,
-                  order_items: order_items_permitted_params,
-                  shipping: shipment_permitted_params).to_h
+      .permit(order_permitted_params,
+              payments: [payment_permitted_params],
+              buyer: buyer_permitted_params,
+              order_items: order_items_permitted_params,
+              shipping: shipment_permitted_params).to_h
   end
 
   def order_permitted_params
@@ -67,7 +67,7 @@ class Api::V1::OrdersController < ApplicationController
   end
 
   def build_payment_hash(params)
-    params.dig(:payments).collect do |payment|
+    params[:payments].collect do |payment|
       {
         type: payment[:payment_type],
         value: payment[:total_paid_amount]
@@ -76,7 +76,7 @@ class Api::V1::OrdersController < ApplicationController
   end
 
   def build_items_hash(params)
-    params.dig(:order_items).collect do |item|
+    params[:order_items].collect do |item|
       {
         externalCode: item[:item][:id],
         name: item[:item][:title],
@@ -89,7 +89,7 @@ class Api::V1::OrdersController < ApplicationController
   end
 
   def build_customer_hash(params)
-    customer = params.dig(:buyer)
+    customer = params[:buyer]
 
     {
       externalCode: customer[:id].to_s,
@@ -105,9 +105,9 @@ class Api::V1::OrdersController < ApplicationController
     {
       city: receiver_address.dig(:city, :name),
       district: receiver_address.dig(:neighborhood, :name),
-      street: receiver_address.dig(:street_name),
-      complement: receiver_address.dig(:comment),
-      postalCode: receiver_address.dig(:zip_code)
+      street: receiver_address[:street_name],
+      complement: receiver_address[:comment],
+      postalCode: receiver_address[:zip_code]
     }
   end
 
@@ -121,19 +121,19 @@ class Api::V1::OrdersController < ApplicationController
       subTotal: params[:total_amount].to_s,
       deliveryFee: params[:total_shipping].to_s,
       total: params[:paid_amount].to_s,
-      dtOrderCreate: DateTime.now.strftime("%Y-%m-%dT%H:%M:%S.%LZ"),
-      number: "0", # HUM
+      dtOrderCreate: DateTime.now.strftime('%Y-%m-%dT%H:%M:%S.%LZ'),
+      number: '0', # HUM
       customer: build_customer_hash(params),
       items: build_items_hash(params),
       payments: build_payment_hash(params)
     }.merge(fetch_location_data_from_state_and_zip(state, zip))
-     .merge(build_shipping_hash(params))
+      .merge(build_shipping_hash(params))
   end
 
   def fetch_location_data_from_state_and_zip(state, zip)
     result = Geocoder.search(state).first
     latitude, longitude = result.coordinates
-    response = Typhoeus.get(ENV['CEP_ENDPOINT'] + zip.to_s + '/json').response_body
+    response = Typhoeus.get("#{ENV['CEP_ENDPOINT']}#{zip}/json").response_body
     parsed_response = JSON.parse(response)
 
     {

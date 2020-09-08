@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_08_232252) do
+ActiveRecord::Schema.define(version: 2020_09_08_233037) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -25,6 +25,8 @@ ActiveRecord::Schema.define(version: 2020_09_08_232252) do
     t.jsonb "billing_info"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.uuid "orders_id"
+    t.index ["orders_id"], name: "index_buyers_on_orders_id"
   end
 
   create_table "items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -40,6 +42,24 @@ ActiveRecord::Schema.define(version: 2020_09_08_232252) do
     t.integer "quantity"
     t.float "unit_price"
     t.float "full_unit_price"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.uuid "orders_id"
+    t.index ["orders_id"], name: "index_order_items_on_orders_id"
+  end
+
+  create_table "orders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "external_code"
+    t.string "store_id"
+    t.datetime "date_created"
+    t.datetime "date_closed"
+    t.datetime "last_updated"
+    t.float "total_amount"
+    t.float "total_shipping"
+    t.float "total_amount_with_shipping"
+    t.float "paid_amount"
+    t.datetime "expiration_date"
+    t.string "status"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -58,6 +78,8 @@ ActiveRecord::Schema.define(version: 2020_09_08_232252) do
     t.datetime "date_created"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.uuid "orders_id"
+    t.index ["orders_id"], name: "index_payments_on_orders_id"
   end
 
   create_table "receiver_addresses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -85,8 +107,14 @@ ActiveRecord::Schema.define(version: 2020_09_08_232252) do
     t.datetime "date_created"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.uuid "orders_id"
+    t.index ["orders_id"], name: "index_shipments_on_orders_id"
   end
 
+  add_foreign_key "buyers", "orders", column: "orders_id"
   add_foreign_key "items", "order_items"
+  add_foreign_key "order_items", "orders", column: "orders_id"
+  add_foreign_key "payments", "orders", column: "orders_id"
   add_foreign_key "receiver_addresses", "shipments"
+  add_foreign_key "shipments", "orders", column: "orders_id"
 end

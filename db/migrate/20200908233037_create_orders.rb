@@ -12,7 +12,6 @@ class CreateOrders < ActiveRecord::Migration[6.0]
       t.float :paid_amount
       t.datetime :expiration_date
       t.string :status
-      t.float :total_shipping
 
       t.timestamps
     end

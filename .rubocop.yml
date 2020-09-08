@@ -11,6 +11,15 @@ AllCops:
     - 'db/**/*'
     - 'node_modules/**/*'
 
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/AbcSize:
+  Max: 21
+
+Metrics/ClassLength:
+  Max: 131
+
 Metrics/BlockLength:
   Exclude:
     - config/routes.rb
