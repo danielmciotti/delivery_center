@@ -2,8 +2,6 @@
 
 class Api::V1::OrdersController < ApplicationController
   def create
-    debugger
-
     send_response(build_order(permitted_params))
   end
 
@@ -84,8 +82,8 @@ class Api::V1::OrdersController < ApplicationController
         name: item[:item][:title],
         price: item[:unit_price],
         quantity: item[:quantity],
-        total: item[:full_init_price],
-        subitems: []
+        total: item[:full_unit_price],
+        subItems: []
       }
     end
   end
@@ -94,8 +92,8 @@ class Api::V1::OrdersController < ApplicationController
     customer = params.dig(:buyer)
 
     {
-      externalCode: customer[:id],
-      name: customer[:first_name].upcase + customer[:last_name].upcase,
+      externalCode: customer[:id].to_s,
+      name: customer[:first_name].upcase.concat(' ', customer[:last_name].upcase),
       email: customer[:email],
       contact: customer[:phone][:number]
     }
@@ -105,38 +103,44 @@ class Api::V1::OrdersController < ApplicationController
     receiver_address = params.dig(:shipping, :receiver_address)
 
     {
-      country: receiver_address.dig(:country, :name),
-      state: receiver_address.dig(:state, :name),
       city: receiver_address.dig(:city, :name),
       district: receiver_address.dig(:neighborhood, :name),
-      stret: receiver_address.dig(:street_name),
+      street: receiver_address.dig(:street_name),
       complement: receiver_address.dig(:comment),
       postalCode: receiver_address.dig(:zip_code)
     }
   end
 
   def build_order(params)
+    state = params.dig(:shipping, :receiver_address, :state, :name)
+    zip = params.dig(:shipping, :receiver_address, :zip_code)
+
     {
-      externalCode: params[:id],
+      externalCode: params[:id].to_s,
       storeId: params[:store_id],
       subTotal: params[:total_amount].to_s,
-      deliveryFee: params[:total_shipping],
+      deliveryFee: params[:total_shipping].to_s,
       total: params[:paid_amount].to_s,
       dtOrderCreate: DateTime.now.strftime("%Y-%m-%dT%H:%M:%S.%LZ"),
       number: "0", # HUM
       customer: build_customer_hash(params),
       items: build_items_hash(params),
       payments: build_payment_hash(params)
-    }.merge(fetch_coordinates_from_state(params.dig(:shipping, :receiver_address, :state, :name)))
+    }.merge(fetch_location_data_from_state_and_zip(state, zip))
      .merge(build_shipping_hash(params))
   end
 
-  def fetch_coordinates_from_state(state)
-    latitude, longitude = Geocoder.search(state).first.coordinates
+  def fetch_location_data_from_state_and_zip(state, zip)
+    result = Geocoder.search(state).first
+    latitude, longitude = result.coordinates
+    response = Typhoeus.get(ENV['CEP_ENDPOINT'] + zip.to_s + '/json').response_body
+    parsed_response = JSON.parse(response)
 
     {
       latitude: latitude,
-      longitude: longitude
+      longitude: longitude,
+      country: result.country_code.upcase,
+      state: parsed_response['uf']
     }
   end
 
