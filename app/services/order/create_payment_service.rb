@@ -1,7 +1,8 @@
-class Order::CreatePaymentService < BaseOrderService
+# frozen_string_literal: true
 
+class Order::CreatePaymentService < BaseOrderService
   def initialize(order_id, params)
-    return unless params.has_key? :payments
+    return unless params.key? :payments
 
     super
   end

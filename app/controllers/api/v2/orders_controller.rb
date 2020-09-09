@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Api::V2::OrdersController < ApplicationController
-
   def create
     ActiveRecord::Base.transaction do
       @order = Order.create!(permitted_params)
@@ -10,6 +9,8 @@ class Api::V2::OrdersController < ApplicationController
       @shipping = Order::CreateShipmentService.call(@order.id, params)
       @address = Order::CreateDeliveryAddressService.call(@shipping.id, params)
       @order_items = Order::CreateOrderItemsService.call(@order.id, params)
+
+      PlaceOrderService.call(@order.id)
     end
   end
 

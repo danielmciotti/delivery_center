@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class Order::CreateDeliveryAddressService < BaseOrderService
   attr_accessor :shipment, :params
 
   def initialize(shipment_id, params)
-    return unless params.has_key? :shipping
+    return unless params.key? :shipping
     return if shipment_id.nil?
 
     self.params = permitted_params(params)

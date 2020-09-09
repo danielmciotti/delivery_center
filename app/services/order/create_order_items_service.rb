@@ -1,7 +1,8 @@
-class Order::CreateOrderItemsService < BaseOrderService
+# frozen_string_literal: true
 
+class Order::CreateOrderItemsService < BaseOrderService
   def initialize(order_id, params)
-    return unless params.has_key? :order_items
+    return unless params.key? :order_items
 
     super
   end

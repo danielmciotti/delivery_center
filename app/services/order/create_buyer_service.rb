@@ -1,7 +1,8 @@
-class Order::CreateBuyerService < BaseOrderService
+# frozen_string_literal: true
 
+class Order::CreateBuyerService < BaseOrderService
   def initialize(order_id, params)
-    return unless params.has_key? :buyer
+    return unless params.key? :buyer
 
     super
   end

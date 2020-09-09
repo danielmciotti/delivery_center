@@ -61,3 +61,7 @@ Layout/MultilineMethodCallIndentation:
 
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
+
+Lint/MissingSuper:
+  Exclude:
+    - 'app/services/order/create_delivery_address_service.rb'

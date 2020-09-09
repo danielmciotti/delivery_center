@@ -1,5 +1,6 @@
-class Typhoeus::PostRequestService < TyphoeusService
+# frozen_string_literal: true
 
+class Typhoeus::PostRequestService < BaseTyphoeusService
   def execute
     Typhoeus.post(url, body: body, headers: headers)
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BaseOrderService < BaseService
   attr_accessor :params, :order
 
@@ -6,6 +8,8 @@ class BaseOrderService < BaseService
 
     self.params = permitted_params(params)
     self.order = Order.find_by(id: order_id)
+
+    super
   end
 
   private

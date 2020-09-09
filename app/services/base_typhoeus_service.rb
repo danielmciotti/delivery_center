@@ -1,8 +1,12 @@
-class TyphoeusService < BaseService
+# frozen_string_literal: true
+
+class BaseTyphoeusService < BaseService
   attr_accessor :body
 
   def initialize(body = {})
     self.body = body
+
+    super
   end
 
   private
