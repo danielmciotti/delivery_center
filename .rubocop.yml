@@ -64,4 +64,4 @@ Layout/SpaceInsideHashLiteralBraces:
 
 Lint/MissingSuper:
   Exclude:
-    - 'app/services/order/create_delivery_address_service.rb'
+    - 'app/services/**/*.rb'
