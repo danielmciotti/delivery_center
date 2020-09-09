@@ -6,6 +6,7 @@ class CreatePayments < ActiveRecord::Migration[6.0]
       t.string :external_code
       t.string :status
       t.string :payment_type
+      t.string :payer_id
       t.integer :installments
       t.float :transaction_amount
       t.float :taxes_amount

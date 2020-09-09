@@ -4,6 +4,7 @@ class CreateOrderItems < ActiveRecord::Migration[6.0]
       t.integer :quantity
       t.float :unit_price
       t.float :full_unit_price
+      t.jsonb :item
 
       t.timestamps
     end

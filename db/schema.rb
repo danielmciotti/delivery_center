@@ -21,31 +21,24 @@ ActiveRecord::Schema.define(version: 2020_09_08_233037) do
     t.string "nickname"
     t.string "first_name"
     t.string "last_name"
+    t.string "email"
     t.jsonb "phone"
     t.jsonb "billing_info"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.uuid "orders_id"
-    t.index ["orders_id"], name: "index_buyers_on_orders_id"
-  end
-
-  create_table "items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "externalCode"
-    t.string "title"
-    t.uuid "order_item_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["order_item_id"], name: "index_items_on_order_item_id"
+    t.uuid "order_id"
+    t.index ["order_id"], name: "index_buyers_on_order_id"
   end
 
   create_table "order_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "quantity"
     t.float "unit_price"
     t.float "full_unit_price"
+    t.jsonb "item"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.uuid "orders_id"
-    t.index ["orders_id"], name: "index_order_items_on_orders_id"
+    t.uuid "order_id"
+    t.index ["order_id"], name: "index_order_items_on_order_id"
   end
 
   create_table "orders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -68,6 +61,7 @@ ActiveRecord::Schema.define(version: 2020_09_08_233037) do
     t.string "external_code"
     t.string "status"
     t.string "payment_type"
+    t.string "payer_id"
     t.integer "installments"
     t.float "transaction_amount"
     t.float "taxes_amount"
@@ -78,8 +72,8 @@ ActiveRecord::Schema.define(version: 2020_09_08_233037) do
     t.datetime "date_created"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.uuid "orders_id"
-    t.index ["orders_id"], name: "index_payments_on_orders_id"
+    t.uuid "order_id"
+    t.index ["order_id"], name: "index_payments_on_order_id"
   end
 
   create_table "receiver_addresses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -107,14 +101,13 @@ ActiveRecord::Schema.define(version: 2020_09_08_233037) do
     t.datetime "date_created"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.uuid "orders_id"
-    t.index ["orders_id"], name: "index_shipments_on_orders_id"
+    t.uuid "order_id"
+    t.index ["order_id"], name: "index_shipments_on_order_id"
   end
 
-  add_foreign_key "buyers", "orders", column: "orders_id"
-  add_foreign_key "items", "order_items"
-  add_foreign_key "order_items", "orders", column: "orders_id"
-  add_foreign_key "payments", "orders", column: "orders_id"
+  add_foreign_key "buyers", "orders"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "payments", "orders"
   add_foreign_key "receiver_addresses", "shipments"
-  add_foreign_key "shipments", "orders", column: "orders_id"
+  add_foreign_key "shipments", "orders"
 end

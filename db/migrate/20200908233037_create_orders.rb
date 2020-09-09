@@ -16,9 +16,9 @@ class CreateOrders < ActiveRecord::Migration[6.0]
       t.timestamps
     end
 
-    add_reference :payments, :orders, foreign_key: true, type: :uuid
-    add_reference :buyers, :orders, foreign_key: true, type: :uuid
-    add_reference :shipments, :orders, foreign_key: true, type: :uuid
-    add_reference :order_items, :orders, foreign_key: true, type: :uuid
+    add_reference :payments, :order, foreign_key: true, type: :uuid
+    add_reference :buyers, :order, foreign_key: true, type: :uuid
+    add_reference :shipments, :order, foreign_key: true, type: :uuid
+    add_reference :order_items, :order, foreign_key: true, type: :uuid
   end
 end

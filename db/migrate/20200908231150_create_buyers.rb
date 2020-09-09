@@ -5,6 +5,7 @@ class CreateBuyers < ActiveRecord::Migration[6.0]
       t.string :nickname
       t.string :first_name
       t.string :last_name
+      t.string :email
       t.jsonb :phone
       t.jsonb :billing_info
 
